@@ -1,4 +1,5 @@
 import ast.AstPrintVisitor;
+import ast.AstVarVisitor;
 import ast.AstXMLSerializer;
 import ast.Program;
 
@@ -20,7 +21,7 @@ public class Main {
                 throw new UnsupportedOperationException("TODO - Ex. 4");
             } else if (inputMethod.equals("unmarshal")) {
                 AstXMLSerializer xmlSerializer = new AstXMLSerializer();
-                prog = xmlSerializer.deserialize(new File(filename));
+                prog = xmlSerializer.deserialize(new File(filename)); // from xml to ast
             } else {
                 throw new UnsupportedOperationException("unknown input method " + inputMethod);
             }
@@ -30,7 +31,7 @@ public class Main {
 
                 if (action.equals("marshal")) {
                     AstXMLSerializer xmlSerializer = new AstXMLSerializer();
-                    xmlSerializer.serialize(prog, outfilename);
+                    xmlSerializer.serialize(prog, outfilename); // from ast to xml
                 } else if (action.equals("print")) {
                     AstPrintVisitor astPrinter = new AstPrintVisitor();
                     astPrinter.visit(prog);
@@ -57,8 +58,16 @@ public class Main {
                         throw new IllegalArgumentException("unknown rename type " + type);
                     }
 
-                    throw new UnsupportedOperationException("TODO - Ex. 1");
-
+                    if (!isMethod) { // var rename
+                        AstVarVisitor astRenameVar = new AstVarVisitor(originalName, newName, Integer.parseInt(originalLine));
+                        astRenameVar.visit(prog);
+                    }
+                    else { // TODO - add AST-Method - method rename
+                        throw new UnsupportedOperationException("TODO - Ex. 1");
+                    }
+                    // after renaming - convert back ast to xml
+                    AstXMLSerializer xmlSerializer = new AstXMLSerializer();
+                    xmlSerializer.serialize(prog, outfilename); // from ast to xml
                 } else {
                     throw new IllegalArgumentException("unknown command line action " + action);
                 }
